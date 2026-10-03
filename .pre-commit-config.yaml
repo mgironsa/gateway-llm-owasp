@@ -1,0 +1,17 @@
+# Escanea secretos en cada commit. Instalar con:  pre-commit install
+#repos:
+#  - repo: https://github.com/gitleaks/gitleaks
+#    rev: v8.30.1
+#    hooks:
+#      - id: gitleaks
+#-----------------
+
+# Escanea secretos en cada commit con el gitleaks instalado en el equipo.
+repos:
+  - repo: local
+    hooks:
+      - id: gitleaks
+        name: gitleaks (detectar secretos)
+        entry: gitleaks git --pre-commit --redact --staged --verbose
+        language: system
+        pass_filenames: false

@@ -1,0 +1,20 @@
+# Secretos
+.env
+*.env
+!.env.example
+
+# Entornos y cachés
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Logs generados (pueden contener datos si se corre la línea base)
+logs/
+*.log
+
+# Sistema
+.DS_Store
+Thumbs.db
+.vscode/
