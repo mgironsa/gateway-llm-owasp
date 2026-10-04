@@ -1,0 +1,19 @@
+# LLM10 — ANTES — 2026-10-04T10:04:09
+Ráfaga de 15 solicitudes con la key de cliente-a:
+  solicitud 01 → HTTP 200
+  solicitud 02 → HTTP 200
+  solicitud 03 → HTTP 200
+  solicitud 04 → HTTP 200
+  solicitud 05 → HTTP 200
+  solicitud 06 → HTTP 200
+  solicitud 07 → HTTP 200
+  solicitud 08 → HTTP 200
+  solicitud 09 → HTTP 200
+  solicitud 10 → HTTP 200
+  solicitud 11 → HTTP 200
+  solicitud 12 → HTTP 200
+  solicitud 13 → HTTP 200
+  solicitud 14 → HTTP 200
+  solicitud 15 → HTTP 200
+Resultado cliente-a: 15 aceptadas, 0 rechazadas (429)
+cliente-b en paralelo → HTTP 200 · {"respuesta": "[MOCK] Respuesta de soporte de TI para: Consulta de cliente-b durante la ráfaga", "request_id": "282916a574e8", "modelo": "mock-vulnerable", "tokens": {"entrada": 95, "salida": 20}}

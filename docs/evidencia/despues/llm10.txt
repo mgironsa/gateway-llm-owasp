@@ -1,0 +1,19 @@
+# LLM10 — DESPUES — 2026-10-04T11:10:12
+Ráfaga de 15 solicitudes con la key de cliente-a:
+  solicitud 01 → HTTP 503
+  solicitud 02 → HTTP 503
+  solicitud 03 → HTTP 503
+  solicitud 04 → HTTP 503
+  solicitud 05 → HTTP 503
+  solicitud 06 → HTTP 429
+  solicitud 07 → HTTP 429
+  solicitud 08 → HTTP 429
+  solicitud 09 → HTTP 429
+  solicitud 10 → HTTP 429
+  solicitud 11 → HTTP 429
+  solicitud 12 → HTTP 429
+  solicitud 13 → HTTP 429
+  solicitud 14 → HTTP 503
+  solicitud 15 → HTTP 503
+Resultado cliente-a: 0 aceptadas, 8 rechazadas (429)
+cliente-b en paralelo → HTTP 503 · {"error": "El servicio de IA no está disponible temporalmente.", "request_id": "dde1c10347f0"}

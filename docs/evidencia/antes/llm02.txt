@@ -1,0 +1,5 @@
+# LLM02 — ANTES — 2026-10-04T11:10:04
+Solicitud normal con el proveedor en falla (MOCK_FALLA=auth o key de Gemini falsa):
+  → HTTP 503 · {"error": "El servicio de IA no está disponible temporalmente.", "request_id": "5d0778abe326"}
+
+Buscar en la respuesta: 'key=', 'AIza', 'googleapis' o mensajes del proveedor.

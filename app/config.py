@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     # ── Proveedor upstream ──────────────────────────────────────────────
     provider: Literal["gemini", "mock"] = "mock"
     gemini_api_key: SecretStr | None = None
-    gemini_model: str = "gemini-2.5-flash"
+    gemini_model: str = "gemini-3.5-flash-lite" #reemplazo por "gemini-2.5-flash-lite" a Gemini 3.5
     upstream_timeout_s: float = 20.0
     max_output_tokens: int = 300           # techo de consumo por respuesta (LLM10)
 
