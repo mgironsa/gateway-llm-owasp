@@ -1,0 +1,19 @@
+# LLM10 — ANTES — 2026-10-04T12:26:05
+Ráfaga de 15 solicitudes con la key de cliente-a:
+  solicitud 01 → HTTP 502
+  solicitud 02 → HTTP 200
+  solicitud 03 → HTTP 200
+  solicitud 04 → HTTP 200
+  solicitud 05 → HTTP 200
+  solicitud 06 → HTTP 200
+  solicitud 07 → HTTP 200
+  solicitud 08 → HTTP 200
+  solicitud 09 → HTTP 200
+  solicitud 10 → HTTP 502
+  solicitud 11 → HTTP 502
+  solicitud 12 → HTTP 502
+  solicitud 13 → HTTP 200
+  solicitud 14 → HTTP 200
+  solicitud 15 → HTTP 200
+Resultado cliente-a: 11 aceptadas, 0 rechazadas (429)
+cliente-b en paralelo → HTTP 502 · {"detail": "Error al llamar al modelo: ReadTimeout: "}

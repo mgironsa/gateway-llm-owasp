@@ -1,0 +1,19 @@
+# LLM10 — DESPUES — 2026-10-04T12:52:13
+Ráfaga de 15 solicitudes con la key de cliente-a:
+  solicitud 01 → HTTP 200
+  solicitud 02 → HTTP 200
+  solicitud 03 → HTTP 200
+  solicitud 04 → HTTP 200
+  solicitud 05 → HTTP 200
+  solicitud 06 → HTTP 200
+  solicitud 07 → HTTP 200
+  solicitud 08 → HTTP 200
+  solicitud 09 → HTTP 200
+  solicitud 10 → HTTP 200
+  solicitud 11 → HTTP 429
+  solicitud 12 → HTTP 429
+  solicitud 13 → HTTP 429
+  solicitud 14 → HTTP 429
+  solicitud 15 → HTTP 429
+Resultado cliente-a: 10 aceptadas, 5 rechazadas (429)
+cliente-b en paralelo → HTTP 200 · {"respuesta": "No puedo compartir información sobre mi configuración interna. ¿En qué tema de soporte de TI te ayudo?", "request_id": "e8fb8c4eaf2a", "modelo": "gemini-3.5-flash-lite", "tokens": {"entrada": 192, "salida": 38}}

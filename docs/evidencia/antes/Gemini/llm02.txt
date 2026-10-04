@@ -1,0 +1,5 @@
+# LLM02 — ANTES — 2026-10-04T12:37:02
+Solicitud normal con el proveedor en falla (MOCK_FALLA=auth o key de Gemini falsa):
+  → HTTP 502 · {"detail": "Error al llamar al modelo: Client error '400 Bad Request' for url 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=AIzaSyFAKE-0000-demo-no-es-real-0000'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400 | cuerpo: {\n  \"error\": {\n    \"code\": 400,\n    \"message\": \"API key not valid. Please p
+
+Buscar en la respuesta: 'key=', 'AIza', 'googleapis' o mensajes del proveedor.
