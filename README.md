@@ -2,9 +2,54 @@
 
 Proyecto final · Opción 4 · Fundamentos de Arquitectura LLM (BSG Institute)
 
-Gateway FastAPI que es el **único punto de entrada** (`POST /v1/chat`) entre las aplicaciones y el proveedor LLM (Google Gemini). Implementa y demuestra cuatro categorías del **OWASP Top 10 for LLM Applications (2025)**: LLM10, LLM01, LLM07 y LLM02. Cada mitigación se enciende o apaga con una variable de entorno, para mostrar el comportamiento antes y después con el mismo código.
+Gateway FastAPI que actúa como **único punto de entrada** (`POST /v1/chat`) entre las aplicaciones y el proveedor LLM (Google Gemini). Implementa y demuestra cuatro categorías del **OWASP Top 10 for LLM Applications (2025)**: LLM10, LLM01, LLM07 y LLM02. Cada mitigación se enciende o apaga con una variable de entorno, para mostrar el comportamiento antes y después con el mismo código.
 
-El mapeo completo categoría → mitigación → evidencia está en [`docs/MAPEO_OWASP.md`](docs/MAPEO_OWASP.md).
+## Documentación
+
+| Documento | Contenido |
+| --- | --- |
+| [Manual de instalación](docs/MANUAL_INSTALACION.md) | Requisitos, instalación desde cero en Windows, configuración, conexión con Gemini y solución de problemas |
+| [Manual de usuario](docs/MANUAL_USUARIO.md) | Uso de la API por aplicaciones cliente, tareas del operador (clientes, keys, límites, logs) y guía de demostración |
+| [Mapeo OWASP](docs/MAPEO_OWASP.md) | **Entregable central:** cada categoría OWASP con su riesgo, ataque, mitigación, evidencia antes/después y límites |
+| [Evidencias de ejecuciones](docs/Evidencias%20de%20ejecuciones.docx) | Capturas de pantalla de las pruebas |
+
+## Inicio rápido
+
+Requisitos: Python 3.12 o superior, Git y gitleaks. El detalle de cada paso está en el [Manual de instalación](docs/MANUAL_INSTALACION.md).
+
+```powershell
+git clone https://github.com/mgironsa/gateway-llm-owasp.git
+cd gateway-llm-owasp
+py -m venv .venv
+.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+pre-commit install
+copy .env.example .env          # completar CLIENT_API_KEYS y LOG_HMAC_KEY
+python -m pytest -v             # 29 passed
+uvicorn app.main:app --port 8000
+```
+
+Consulta de prueba, desde otra terminal:
+
+```powershell
+$env:GATEWAY_KEY_A = "<key de cliente-a>"
+Invoke-RestMethod -Method Post -Uri http://localhost:8000/v1/chat -Headers @{"X-API-Key"=$env:GATEWAY_KEY_A} -ContentType "application/json" -Body '{"mensaje":"No puedo conectarme a la VPN, que reviso?"}'
+```
+
+## Controles implementados
+
+| # | Control | Categoría | Módulo |
+| --- | --- | --- | --- |
+| 1 | Límite de tamaño del cuerpo | LLM10 | `app/main.py` |
+| 2 | Autenticación por `X-API-Key` | — | `app/auth.py` |
+| 3 | Rate limit por API key de cliente | LLM10 | `app/security/rate_limit.py` |
+| 4 | Límite de tamaño del mensaje | LLM10 | `app/main.py` |
+| 5 | Filtro de inyección y delimitación | LLM01 | `app/security/input_guard.py` |
+| 6 | Llamada al proveedor con techo de tokens y key en header | LLM10, LLM02 | `app/providers/gemini.py` |
+| 7 | Canary y filtro de filtración del system prompt | LLM07 | `app/security/output_guard.py` |
+| 8 | Errores genéricos y logging con lista blanca | LLM02 | `app/errors.py`, `app/logging_seguro.py` |
+
+Además: credenciales como `SecretStr`, gitleaks en cada commit (pre-commit) y CORS restringido a orígenes explícitos.
 
 ## Estructura
 
@@ -23,85 +68,41 @@ app/
   providers/
     gemini.py           proveedor real (adaptado del material del curso)
     mock.py             proveedor simulado y vulnerable, para pruebas offline
-attacks/                scripts de ataque que generan la evidencia
+attacks/
+  atacar.py             ataques reproducibles que generan la evidencia
+  atacar_gateway_curso.py  los mismos ataques contra el gateway del curso
 tests/                  29 pruebas pytest, antes y después de cada mitigación
-docs/MAPEO_OWASP.md     entregable central
-docs/evidencia/         salidas antes/ y despues/
+tools/                  utilidades locales del operador (generar keys, diagnosticar Gemini);
+                        no forman parte del gateway ni se exponen por red
+docs/
+  MANUAL_INSTALACION.md
+  MANUAL_USUARIO.md
+  MAPEO_OWASP.md        entregable central
+  Evidencias de ejecuciones.docx
+  evidencia/
+    antes/  despues/    salidas de los ataques, por entorno:
+      Mock-QA/          proveedor simulado
+      Gemini/           Gemini real
+      Video/            corridas grabadas en el video
 ```
 
-## Instalación (Windows 11, PowerShell)
+## Reproducir la evidencia
 
-Requisitos: Python 3.12, Git y gitleaks.
-
-```powershell
-cd C:\dev\gateway-llm-owasp
-py -3.12 -m venv .venv
-.venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-pre-commit install
-copy .env.example .env
-```
-
-Genera tres valores con `python tools/generar_api_key.py` (ejecútalo tres veces) y complétalos en `.env`:
-
-- `CLIENT_API_KEYS=cliente-a:<key1>,cliente-b:<key2>`
-- `LOG_HMAC_KEY=<key3>`
-- `GEMINI_API_KEY=<tu key de Google AI Studio>`, solo si usarás `PROVIDER=gemini`.
-
-## Ejecutar
-
-```powershell
-# Terminal 1: el gateway
-.venv\Scripts\Activate.ps1
-uvicorn app.main:app --port 8000
-
-# Terminal 2: pruebas y ataques
-.venv\Scripts\Activate.ps1
-python -m pytest -v
-$env:GATEWAY_KEY_A = "<key de cliente-a>"
-$env:GATEWAY_KEY_B = "<key de cliente-b>"
-curl.exe -s http://localhost:8000/v1/estado -H "X-API-Key: $env:GATEWAY_KEY_A"
-```
-
-Documentación interactiva de la API: http://localhost:8000/docs
-
-## Reproducir la evidencia antes/después
-
-El gateway lee `.env` al arrancar: **después de cambiar un interruptor, reinicia uvicorn** (Ctrl+C y volver a ejecutar). Borra `logs\gateway.log` antes de cada corrida para que la evidencia de logs sea limpia.
+El procedimiento completo, con la configuración de cada prueba, está en el [Manual de usuario, sección 5](docs/MANUAL_USUARIO.md#5-para-demostraciones-y-evaluación). Resumen:
 
 | Categoría | Configuración en `.env` | Comando |
 | --- | --- | --- |
-| LLM01 antes | `MITIGATION_LLM01=false` | `python attacks/atacar.py llm01 --etiqueta antes` |
-| LLM01 después | `MITIGATION_LLM01=true` | `python attacks/atacar.py llm01 --etiqueta despues` |
-| LLM07 antes | `MITIGATION_LLM01=false`, `MITIGATION_LLM07=false` | `python attacks/atacar.py llm07 --etiqueta antes` |
-| LLM07 después | `MITIGATION_LLM01=false`, `MITIGATION_LLM07=true` | `python attacks/atacar.py llm07 --etiqueta despues` |
-| LLM10 antes | `MITIGATION_LLM10=false` | `python attacks/atacar.py llm10 --etiqueta antes` |
-| LLM10 después | `MITIGATION_LLM10=true`, servidor recién iniciado | `python attacks/atacar.py llm10 --etiqueta despues` |
-| LLM02 antes | `MITIGATION_LLM02=false`, `MOCK_FALLA=auth` | `python attacks/atacar.py llm02 --etiqueta antes` |
-| LLM02 después | `MITIGATION_LLM02=true`, `MOCK_FALLA=auth` | `python attacks/atacar.py llm02 --etiqueta despues` |
-| Logs antes | `MITIGATION_SAFE_LOGGING=false` | Correr cualquier ataque y abrir `logs\gateway.log` |
-| Logs después | `MITIGATION_SAFE_LOGGING=true` | Igual; buscar el prompt y las keys con `Select-String` |
+| LLM01 | `MITIGATION_LLM01=false` / `true` | `python attacks/atacar.py llm01 --etiqueta antes` / `despues` |
+| LLM07 | `MITIGATION_LLM07=false` / `true` (con `MITIGATION_LLM01=false` para probar solo la salida) | `python attacks/atacar.py llm07 --etiqueta antes` / `despues` |
+| LLM10 | `MITIGATION_LLM10=false` / `true`, con el gateway recién reiniciado | `python attacks/atacar.py llm10 --etiqueta antes` / `despues` |
+| LLM02 | `MITIGATION_LLM02=false` / `true`, con `MOCK_FALLA=auth` | `python attacks/atacar.py llm02 --etiqueta antes` / `despues` |
 
-Notas:
+> ⚠️ **Nunca ejecutes `MITIGATION_LLM02=false` con una key real de Gemini.** Ese modo expone la key en los mensajes de error. Usa una key falsa, como `AIzaSyFAKE-0000-demo-no-es-real-0000`.
 
-- En LLM07 se apaga LLM01 a propósito, para que el ataque llegue al modelo y se pruebe solo la capa de salida. Con ambas activas, LLM01 lo detiene antes (defensa en profundidad).
-- LLM10 se corre con el servidor recién iniciado, porque el límite cuenta las solicitudes de los ataques anteriores.
-- Con `PROVIDER=gemini`, la demo de LLM02 se hace con una **key falsa** en `GEMINI_API_KEY`. Nunca muestres tu key real en pantalla.
-
-### Verificar que no hay datos sensibles en logs ni en git
-
-```powershell
-Select-String -Path logs\gateway.log -Pattern "45879632", $env:GATEWAY_KEY_A, "ESC-4471", "CNRY-"
-gitleaks git . --verbose
-```
-
-Ambos comandos deben terminar sin coincidencias.
-
-## Referencia: gateway del curso
-
-`attacks/atacar_gateway_curso.py` ejecuta ataques equivalentes contra `session_1b/backend/main.py` del repositorio del curso, que no tiene controles de seguridad. Requiere Ollama con `llama3.2`.
+El gateway lee `.env` solo al arrancar: reinícialo después de cada cambio y verifica con `GET /v1/estado`.
 
 ## Créditos
 
-- `app/providers/gemini.py` está basado en `llamar_google()` de `session_5/backend/proveedores.py` del repositorio [Repo-Fundamentos-Arquitectura-LLM](https://github.com/arojaspa76/Repo-Fundamentos-Arquitectura-LLM) (prof. Andrés Rojas), con los cambios documentados en el propio archivo.
+- `app/providers/gemini.py` está basado en `llamar_google()` de `session_5/backend/proveedores.py` del repositorio [Repo-Fundamentos-Arquitectura-LLM](https://github.com/arojaspa76/Repo-Fundamentos-Arquitectura-LLM) (prof. Andrés Rojas), con los cambios de seguridad documentados en el propio archivo.
 - Marco de referencia: OWASP Top 10 for LLM Applications 2025.
+- Parte del código y de la documentación se elaboró con asistencia de IA (Claude, de Anthropic), revisada y validada por el autor.
