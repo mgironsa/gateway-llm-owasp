@@ -101,8 +101,8 @@ El procedimiento completo, con la configuración de cada prueba, está en el [Ma
 
 El gateway lee `.env` solo al arrancar: reinícialo después de cada cambio y verifica con `GET /v1/estado`.
 
-## Créditos
+## Fuentes
 
 - `app/providers/gemini.py` está basado en `llamar_google()` de `session_5/backend/proveedores.py` del repositorio [Repo-Fundamentos-Arquitectura-LLM](https://github.com/arojaspa76/Repo-Fundamentos-Arquitectura-LLM) (prof. Andrés Rojas), con los cambios de seguridad documentados en el propio archivo.
 - Marco de referencia: OWASP Top 10 for LLM Applications 2025.
-- Parte del código y de la documentación se elaboró con asistencia de IA (Claude, de Anthropic), revisada y validada por el autor.
+- Parte del código y de la documentación se elaboró con asistencia de IA (Claude, de Anthropic), revisada y validada por Miguel Giron.
